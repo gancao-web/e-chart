@@ -1,0 +1,72 @@
+{
+    "id": "e-chart",
+    "displayName": "【ECharts图表组件】支持官方所有图表在各类小程序和APP使用",
+    "version": "1.0.0",
+    "description": "本组件不造轮子，只是对Apache ECharts做了uni适配，从而支持ECharts官方所有图表在各类小程序和APP使用，支持按需导入，支持vue3",
+    "keywords": [
+        "折线柱状饼图环形散点图",
+        "K线图气泡图雷达图盒须图热力图",
+        "关系图路径图树图旭日图",
+        "仪表盘漏斗图桑基图象形柱图",
+        "ECharts回归堆叠日历图"
+    ],
+    "repository": "",
+    "engines": {
+        "HBuilderX": "^3.1.0"
+    },
+    "dcloudext": {
+        "type": "component-vue",
+        "sale": {
+            "regular": {
+                "price": "0.00"
+            },
+            "sourcecode": {
+                "price": "0.00"
+            }
+        }
+    },
+    "uni_modules": {
+        "dependencies": [],
+        "encrypt": [],
+        "platforms": {
+            "cloud": {
+                "tcb": "y",
+                "aliyun": "y",
+                "alipay": "y"
+            },
+            "client": {
+                "App": {
+                    "app-vue": "y",
+                    "app-nvue": "n",
+                    "app-harmony": "u",
+                    "app-uvue": "n"
+                },
+                "H5-mobile": {
+                    "Safari": "y",
+                    "Android Browser": "y",
+                    "微信浏览器(Android)": "y",
+                    "QQ浏览器(Android)": "y"
+                },
+                "H5-pc": {
+                    "Chrome": "y",
+                    "IE": "y",
+                    "Edge": "y",
+                    "Firefox": "y",
+                    "Safari": "y"
+                },
+                "小程序": {
+                    "微信": "y",
+                    "阿里": "y",
+                    "百度": "n",
+                    "字节跳动": "y",
+                    "QQ": "y"
+                },
+                "快应用": {
+                    "华为": "u",
+                    "联盟": "u"
+                }
+            }
+        }
+    },
+    "name": "【ECharts图表组件】支持官方所有图表在各类小程序和APP使用"
+}
