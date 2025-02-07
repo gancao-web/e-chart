@@ -1,8 +1,8 @@
 {
     "id": "e-chart",
     "displayName": "【ECharts图表组件】支持官方所有图表在各类小程序和APP使用",
-    "version": "1.0.0",
-    "description": "本组件不造轮子，只是对Apache ECharts做了uni适配，从而支持ECharts官方所有图表在各类小程序和APP使用，支持按需导入，支持vue3",
+    "description": "本组件不造轮子，只是对Apache ECharts做了uni适配，从而支持ECharts官方所有图表在各类小程序和APP使用，支持vue3",
+    "version": "1.2.0",
     "keywords": [
         "折线柱状饼图环形散点图",
         "K线图气泡图雷达图盒须图热力图",
@@ -23,7 +23,16 @@
             "sourcecode": {
                 "price": "0.00"
             }
-        }
+        },
+        "contact": {
+            "qq": ""
+        },
+        "declaration": {
+            "ads": "无",
+            "data": "插件不采集任何数据",
+            "permissions": "无"
+        },
+        "npmurl": ""
     },
     "uni_modules": {
         "dependencies": [],
@@ -35,7 +44,11 @@
                 "alipay": "y"
             },
             "client": {
-                "App": {
+                "Vue": {
+                    "vue2": "y",
+                    "vue3": "y"
+                }, 
+				"App": {
                     "app-vue": "y",
                     "app-nvue": "n",
                     "app-harmony": "u",
@@ -59,7 +72,10 @@
                     "阿里": "y",
                     "百度": "n",
                     "字节跳动": "y",
-                    "QQ": "y"
+                    "QQ": "y",
+                    "钉钉": "y",
+                    "飞书": "y",
+                    "京东": "y"
                 },
                 "快应用": {
                     "华为": "u",

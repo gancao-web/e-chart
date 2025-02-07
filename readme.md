@@ -4,18 +4,13 @@
 
 2. 用法非常简单，您只需在 [ECharts示例面板](https://echarts.apache.org/examples/zh/editor.html?c=bar-simple) 调好配置，然后传给本组件即可
 
-3. 支持按需引入，大幅减少打包体积，比 [ECharts在线定制](https://echarts.apache.org/zh/builder.html) 的还要小
-
 ![](https://igc-prod.oss-cn-hangzhou.aliyuncs.com/static_res/youzan/weixin-app.jpg)
 
 ## 快速入门
 
-#### 1. 安装echarts
-```
-npm install echarts
-```
-#### 2. 在[插件市场](https://ext.dcloud.net.cn/plugin?id=21932)导入本组件
-#### 3. 在具体页面中使用
+#### 1. 在[插件市场](https://ext.dcloud.net.cn/plugin?id=21932)导入本组件
+
+#### 2. 在具体页面中使用
 #### vue2示例 :
 ```js
 <template>
@@ -25,8 +20,6 @@ npm install echarts
 </template>
 
 <script>
-	import * as echarts from 'echarts'; // 全量引入 (实际项目应按需引入,能大幅减少打包体积)
-	
 	export default {
 		data() {
 			return {
@@ -49,7 +42,7 @@ npm install echarts
 		methods: {
 			// 组件挂载后初始化echarts实例 (也可在请求数据后初始化)
 			initEchart() { 
-				this.$refs.echartRef.init(echarts, this.option);
+				this.$refs.echartRef.init(this.option);
 			},
 			// 异步更新数据或配置
 			setOption() {
@@ -80,7 +73,6 @@ npm install echarts
 
 <script setup>
 	import { ref } from 'vue';
-	import * as echarts from 'echarts'; // 全量引入 (实际项目应按需引入,能大幅减少打包体积)
 
 	// echart组件的ref
 	const echartRef = ref(null);
@@ -103,7 +95,7 @@ npm install echarts
 
 	// 组件挂载后初始化echarts实例 (也可在请求数据后初始化)
 	function initEchart() { 
-		echartRef.value.init(echarts, option);
+		echartRef.value.init(option);
 	}
 
 	// 异步更新数据或配置
@@ -123,24 +115,36 @@ npm install echarts
 </script>
 ```
 
-## 按需引入
-`import * as echarts from 'echarts'` 是全量引入，打包大小约1M  
-按需引入非常简单，只需在[ECharts示例面板](https://echarts.apache.org/examples/zh/editor.html?c=bar-simple) 
-打开'完整代码'下的'按需引入'开关，然后拷贝import和echarts.use代码即可  
-按需引入打包大小约450k，比全量少一大半! 
-比 [ECharts在线定制](https://echarts.apache.org/zh/builder.html) 的还要小，而且更精细可控  
-
-![](https://igc-prod.oss-cn-hangzhou.aliyuncs.com/static_res/uni/echart-auto-import.png)
-
 ## 组件属性
 ```js
-<e-chart width="100%" :height="600" :disable-scroll="false"/> 
+<e-chart ref="echartRef" @ready="initEchart" width="100%" :height="600" :disable-scroll="false"/> 
 ```
 | 属性 | 类型 | 说明 | 必填 | 默认值 |
 | ---- | ---- | ---- | ---- | ---- |
 | width | Number,String | 图表宽度(数字默认rpx,字符串时需写完整单位如`300px`)  | 否 | '100%' |
 | height | Number,String | 图表高度(数字默认rpx,字符串时需写完整单位如`300px`) | 否 | 600 |
 | disableScroll | Boolean | 在图表区域内触摸移动时,是否禁止页面滚动 | 否 | false |
+
+## 图表实例
+图表init之后会返回实例对象echartObj, 也可以通过ref直接获取  
+实例对象支持的方法与[官方的echartsInstance](https://echarts.apache.org/zh/api.html#echartsInstance.showLoading)一致
+```
+async initEchart() {
+  // 组件挂载后初始化echarts实例 (await之后可获取echartObj对象)
+  const { echartObj } = await this.$refs.echartRef.init(this.option); // vue2
+  // const { echartObj } = await echartRef.value.init(option); // vue3
+  
+  // 也可以直接通过ref获取
+  const echartObj = this.$refs.echartRef.echartObj; // vue2
+  // const echartObj = echartRef.value.echartObj; // vue3
+  
+  // 调用实例方法
+  echartObj.showLoading(); // 显示加载动画效果
+  echartObj.hideLoading(); // 隐藏加载动画效果
+  echartObj.setOption(option); // 更新配置
+  echartObj.on('xx', fn); // 绑定事件
+}
+```
 
 ## 图表事件
 touch事件支持返回点中图表元素的信息, 如`seriesIndex, dataIndex, componentIndex, value`等
@@ -149,8 +153,8 @@ touch事件支持返回点中图表元素的信息, 如`seriesIndex, dataIndex, 
 
 async initEchart() {
   // 组件挂载后初始化echarts实例 (await之后可获取echartObj对象)
-  const { echartObj } = await this.$refs.echartRef.init(echarts, this.option); // vue2
-  // const { echartObj } = await echartRef.value.init(echarts, option); // vue3
+  const { echartObj } = await this.$refs.echartRef.init(this.option); // vue2
+  // const { echartObj } = await echartRef.value.init(option); // vue3
 
   let lastMoveEvent = null; // 记录最近一次move的值
 
@@ -180,7 +184,7 @@ async initEchart() {
 ```js
 methods: {
 	async initEchart() {
-		const res = await this.$refs.echartRef.init(echarts, this.option);
+		const res = await this.$refs.echartRef.init(this.option); // vue2
 		
 		// 图表的canvas对象需在await后获取
 		this.echartCanvas = res.echartCanvas;
@@ -210,33 +214,36 @@ methods: {
 ```
 
 ## 常见问题
-#### 1. 组件层级太高,遮住了fixed元素
-本组件内部使用了[原生组件canvas](https://developers.weixin.qq.com/miniprogram/dev/component/native-component.html)，在开发工具部分版本可能会遮住fixed元素  
-但实际上canvas已支持同层渲染，所以在真机是正常的，一定要以真机为准。
 
-#### 2. 如何减少打包体积和小程序主包大小
-1. 按需引入可以大幅减少打包体积，推荐；
-2. 项目业务[使用分包](https://developers.weixin.qq.com/miniprogram/dev/framework/subpackages/basic.html)可以减少小程序主包大小。但请注意`node_modules`和`uni_modules`的资源最终还是打在主包的, 尽管可以把`uni_modules`的资源移到子包, 但无法移动`node_modules`, 所以只能将业务代码尽量按模块分包
-3. vue2项目支持使用[ECharts在线定制的echart.js](https://echarts.apache.org/zh/builder.html), 此时不用npm的echart.js, 所以移到子包中可减少主包大小
-```js
-import * as echarts from 'echarts'; // 使用npm的echarts, 是在node_modules, 无法移动到子包  
-import * as echarts from '../js/echarts.min'; // 使用在线定制的js, 可移到子包, 减少主包大小  
-```
+#### 1. 小程序如何减少打包体积
+使用[ECharts在线定制的echart.js](https://echarts.apache.org/zh/builder.html)替换`static`的`echarts.min.js`即可  
+因为vite不支持require, 所以vite+vue3项目应采用分包策略减少主包大小
 
-#### 3. 运行示例项目报错
-1. 需要先`npm install echarts`(在项目根目录运行npm命令)  
-示例项目是通过HBuilderX创建的, 不是cli, 所以用HBuilderX导入项目, 安装echarts之后即可运行  
-2. 检查manifest.json的vue版本是否正确, 不可使用vue3版本编译vue2的demo, 否则小程序运行报错, 如支付宝小程序
-3. 若用`pnpm`可能会因缓存导致没有自动安装echarts所需的`zrender`或`tslib`依赖  
-只需手动安装`pnpm add zrender`和`pnpm add tslib`即可  
-也可试试清除pnpm缓存`pnpm store prune`或改用`npm`安装
+#### 2. 小程序如何减少主包大小
+1. [使用分包](https://developers.weixin.qq.com/miniprogram/dev/framework/subpackages/basic.html)
+2. 把`/uni_modules/e-chart/`目录下的`components`和`static`文件夹拷贝到子包
+3. 使用组件的时候需显式导入组件: `import EChart from '../components/e-chart/e-chart.vue';`  
+可下载示例,里面的vue3示例是采用分包的,建议参考
 
-#### 4. ECharts官网配置正常,拷贝到具体项目就不生效
-1. 确保拷完按需引入的import和echarts.use代码 或 临时改为全量引入看看是否正常显示
+#### 3. 如何替换echarts版本
+1. vue2使用的是`echarts.min.js`, 是CJS规范, 直接[在线定制](https://echarts.apache.org/zh/builder.html)选择版本替换即可  
+2. vue3使用的是`echarts.esm.min.js`, 是[ESM规范](https://uniapp.dcloud.net.cn/tutorial/migration-to-vue3.html#%E5%8F%AA%E6%94%AF%E6%8C%81%E4%BD%BF%E7%94%A8-es6-%E6%A8%A1%E5%9D%97%E8%A7%84%E8%8C%83). 首先在任意目录`npm install echarts`, 找到`/node_modules/echarts/dist/echarts.esm.min.js`替换即可
+
+#### 4. 组件层级太高,遮住了fixed元素
+真机正常，一定要以真机为准
+
+#### 5. 示例运行不了
+1. 示例不是cli创建的, 应在HBuilderX运行
+2. 试试关闭开发工具的ES6转ES5, 尤其是支付宝小程序
+
+#### 6. ECharts官网配置正常,拷贝到具体项目就不生效
+1. 确保`echarts.min.js`是完整的,检查[在线定制](https://echarts.apache.org/zh/builder.html)是否漏掉资源, 可临时替换为示例的`echarts.min.js`
 2. 编译为其他平台看看是否正常，比如H5 或 微信小程序
 3. 在示例项目运行相关配置看看是否正常
 4. 运行到真机看看是否正常
 
-#### 5. 为什么设计成通过ref操作组件的方式实现图表
-1. import的echarts对象如果通过props传递, 会导致echarts部分属性丢失无法初始化  
-2. option的function属性不支持通过props传递, 通过ref则很好避免了此问题
+#### 7. 为什么要通过ref设置option
+因为option的function属性不支持通过props传递
+
+#### 8. 为什么不使用npm安装的echarts
+尽管npm安装的echarts支持按需引入，减少打包体积，但node_modules终究是无法移到子包的
