@@ -1,8 +1,8 @@
 /**
- * 兼容echarts在非H5平台使用canvas
+ * 对WxCanvas做uni适配, 兼容echarts在非H5平台使用canvas
  * 引用: https://github.com/ecomfe/echarts-for-weixin/blob/master/ec-canvas/wx-canvas.js
  */
-export default class WxCanvas {
+export default class UniCanvas {
   constructor(ctx, canvasId, isNew, canvasNode) {
     this.ctx = ctx;
     this.canvasId = canvasId;
@@ -11,6 +11,7 @@ export default class WxCanvas {
     if (isNew) {
       this.canvasNode = canvasNode;
     } else {
+      this.canvasNode = {}; // 1.缓存宽高; 2.使背景生效
       this._initStyle(ctx);
     }
 
@@ -39,21 +40,18 @@ export default class WxCanvas {
     // noop
   }
 
-  _initCanvas(zrender, ctx) {
-    zrender.util.getContext = function () {
-      return ctx;
-    };
-
-    zrender.util.$override('measureText', function (text, font) {
-      ctx.font = font || '12px sans-serif';
-      return ctx.measureText(text);
-    });
-  }
-
   _initStyle(ctx) {
+    // 适配createRadialGradient
     ctx.createRadialGradient = () => {
       return ctx.createCircularGradient(arguments);
     };
+
+    // 适配drawImage (使APP端正常显示图表中的图片)
+    ctx.uniDrawImage = ctx.drawImage;
+    ctx.drawImage = (...arg) => {
+      arg[0] = arg[0].src
+      ctx.uniDrawImage(...arg)
+    }
   }
 
   _initEvent() {
@@ -93,20 +91,18 @@ export default class WxCanvas {
   }
 
   get width() {
-    if (this.canvasNode) return this.canvasNode.width;
-    return 0;
+    return this.canvasNode.width || 0;
   }
 
   set width(w) {
-    if (this.canvasNode) this.canvasNode.width = w;
+    this.canvasNode.width = w;
   }
 
   get height() {
-    if (this.canvasNode) return this.canvasNode.height;
-    return 0;
+    return this.canvasNode.height || 0;
   }
 
   set height(h) {
-    if (this.canvasNode) this.canvasNode.height = h;
+    this.canvasNode.height = h;
   }
 }
