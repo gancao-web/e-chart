@@ -1,4 +1,4 @@
-## 适配Apache ECharts的图表组件，支持ECharts官方所有图表在各类小程序和APP使用，支持vue2、vue3
+## 【ECharts图表】支持官方所有图表的uni-app组件，支持vue2、vue3、分包、nvue、鸿蒙、uts、uniapp x
 
 1. 本组件不造轮子，只是对 [Apache ECharts](https://echarts.apache.org/zh/index.html) 做了uni适配，从而支持 [ECharts官方所有图表](https://echarts.apache.org/examples/zh/index.html) 在各类小程序和APP使用
 
@@ -11,7 +11,7 @@
 #### 1. 在[插件市场](https://ext.dcloud.net.cn/plugin?id=21932)导入本组件
 
 #### 2. 在具体页面中使用
-#### vue2示例 :
+#### uni-app vue2示例 :
 ```js
 <template>
 	<view>
@@ -63,7 +63,7 @@
 </script>
 ```
 
-#### vue3示例 :
+#### uni-app vue3示例 / uni-app x 示例:
 ```js
 <template>
 	<view>
@@ -75,7 +75,9 @@
 	import { ref } from 'vue';
 
 	// echart组件的ref
-	const echartRef = ref(null);
+	const echartRef = ref(null); // uni-app vue3
+	// const echartRef = ref<EChartComponentPublicInstance | null>(null); // uni-app x 组合式 (^1.4.0)
+	// const echartRef = this.$refs['echartRef'] as EChartComponentPublicInstance; // uni-app x 选项式 (^1.4.0)
 
 	// 支持echarts所有图表,您只需替换此处option即可展示任意图表
 	// const option = ref({}) // 不必声明为响应式对象,普通对象即可
@@ -95,7 +97,8 @@
 
 	// 组件挂载后初始化echarts实例 (也可在请求数据后初始化)
 	function initEchart() { 
-		echartRef.value.init(option);
+		echartRef.value.init(option); // uni-app vue3 和 uni-app x 组合式
+		// echartRef.init(option); // uni-app x 选项式
 	}
 
 	// 异步更新数据或配置
@@ -110,7 +113,8 @@
 		};
 
 		// 执行更新
-		echartRef.value.setOption(option);
+		echartRef.value.setOption(option); // uni-app vue3 和 uni-app x 组合式
+		// echartRef.setOption(option); // uni-app x 选项式
 	}
 </script>
 ```
@@ -123,20 +127,34 @@
 | ---- | ---- | ---- | ---- | ---- |
 | width | Number,String | 图表宽度(数字默认rpx,字符串时需写完整单位如`300px`)  | 否 | '100%' |
 | height | Number,String | 图表高度(数字默认rpx,字符串时需写完整单位如`300px`) | 否 | 600 |
+| theme | String | 标准'light', 暗黑'dark' (非响应式,动态切换参考示例 ^1.4.0) | 否 | 'light' |
 | disableScroll | Boolean | 在图表区域内触摸移动时,是否禁止页面滚动 | 否 | false |
+| render | String | 渲染模式(仅鸿蒙生效): 以'webview'方式渲染,与h5表现一致,但原生组件层级很高; 以'canvas'方式渲染,支持同层渲染,但部分图表属性渲染异常(如tooltip,legend可能变形错位) | 否 | 'webview' |
 
 ## 图表实例
 图表init之后会返回实例对象echartObj, 也可以通过ref直接获取  
 实例对象支持的方法与[官方的echartsInstance](https://echarts.apache.org/zh/api.html#echartsInstance.showLoading)一致
-```
+```js
+// const echartRef = ref(null); // uni-app vue3
+// const echartRef = ref<EChartComponentPublicInstance | null>(null); // uni-app x 组合式 (^1.4.0)
+// const echartRef = this.$refs['echartRef'] as EChartComponentPublicInstance; // uni-app x 选项式 (^1.4.0)
+
 async initEchart() {
   // 组件挂载后初始化echarts实例 (await之后可获取echartObj对象)
-  const { echartObj } = await this.$refs.echartRef.init(this.option); // vue2
-  // const { echartObj } = await echartRef.value.init(option); // vue3
+  const { echartObj } = await this.$refs.echartRef.init(this.option); // uni-app vue2
+  // const { echartObj } = await echartRef.value.init(option); // uni-app vue3
   
   // 也可以直接通过ref获取
-  const echartObj = this.$refs.echartRef.echartObj; // vue2
-  // const echartObj = echartRef.value.echartObj; // vue3
+  // const echartObj = this.$refs.echartRef.echartObj; // uni-app vue2
+  // const echartObj = echartRef.value.echartObj; // uni-app vue3
+
+  // uni-app x 组合式只能通过ref获取
+  // await echartRef.value.init(option);
+  // const echartObj = echartRef.value.getEchartObj();
+
+  // uni-app x 选项式只能通过ref获取
+  // await echartRef.init(option);
+  // const echartObj = echartRef.getEchartObj();
   
   // 调用实例方法
   echartObj.showLoading(); // 显示加载动画效果
@@ -153,27 +171,23 @@ touch事件支持返回点中图表元素的信息, 如`seriesIndex, dataIndex, 
 
 async initEchart() {
   // 组件挂载后初始化echarts实例 (await之后可获取echartObj对象)
-  const { echartObj } = await this.$refs.echartRef.init(this.option); // vue2
-  // const { echartObj } = await echartRef.value.init(option); // vue3
+  const { echartObj } = await this.$refs.echartRef.init(this.option); // uni-app vue2
 
-  let lastMoveEvent = null; // 记录最近一次move的值
+  echartObj.on('click', (e) => {
+    console.log('click', e);
+    uni.showToast({ title: `下标${e.dataIndex + 1}, 值为${e.data}`, icon: 'none' })
+  });
 
   echartObj.on('mousedown', (e) => {
     console.log('mousedown', e);
-	uni.showToast({ title: `下标${e.dataIndex + 1}, 值为${e.data}`, icon: 'none' })
   });
 
   echartObj.on('mousemove', (e) => {
     console.log('mousemove', e);
-	lastMoveEvent = e;
   });
 
-  // 'mouseup'需通过getZr()监听, 元素信息取最后一次move的值
-  echartObj.getZr().on('mouseup', () => {
-    if (lastMoveEvent) {
-		console.log('mouseup', lastMoveEvent);
-		lastMoveEvent = null;
-	}
+  echartObj.on('mouseup', (e) => {
+    console.log('mouseup', e);
   });
 }
 ```
@@ -190,8 +204,7 @@ methods: {
 		// 判断并引导用户打开'保存到相册'的权限...(略)
 
 		// 图表canvas转文件
-		const filePath = await this.$refs.echartRef.canvasToTempFilePath(); // vue2
-        // const filePath = await echartRef.value.canvasToTempFilePath(); // vue3
+		const filePath = await this.$refs.echartRef.canvasToTempFilePath(); // uni-app vue2
 
 		// #ifndef H5
 		// APP和小程序: 保存到相册
@@ -256,3 +269,15 @@ props不支持传递function属性, 所以设计为通过ref设置option
 
 #### 8. 为什么不使用npm安装的echarts
 尽管npm安装的echarts支持按需引入，减少打包体积，但node_modules终究是无法移到子包的
+
+#### 9. 为什么不触发mouseup事件,为什么点击legend没有反应
+至少更新到1.3.1版本
+
+#### 10. uniapp x 如何适配
+至少更新到1.4.0版本
+
+#### 11. 鸿蒙APP如何适配
+至少更新到1.4.1版本
+
+#### 12. nvue 如何适配
+至少更新到1.4.1版本
