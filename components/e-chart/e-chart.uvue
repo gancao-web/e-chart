@@ -190,9 +190,20 @@ export default {
     },
 	
     // 设置配置
-    setOption(option: UTSJSONObject) {
-      this.echartObj?.setOption(option);
-    },
+	setOption(
+	  option: UTSJSONObject,
+	  notMerge: boolean = false,
+	  lazyUpdate: boolean = false,
+	  replaceMerge?: string | string[],
+	  silent: boolean = false
+	) {
+	  this.echartObj?.setOption(option, {
+	    notMerge,
+	    lazyUpdate,
+	    replaceMerge,
+	    silent
+	  });
+	},
 	
     // 获取配置
     getOption() {
