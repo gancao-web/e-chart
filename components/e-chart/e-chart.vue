@@ -218,9 +218,18 @@ export default {
     // #endif
 
     // 设置配置
-    setOption(option) {
-      option && this.echartObj && this.echartObj.setOption(option);
-    },
+    setOption(option, notMerge, lazyUpdate, replaceMerge, silent) {
+      if (this.echartObj && option) {
+        const opts = {
+          notMerge: notMerge || false,
+          lazyUpdate: lazyUpdate || false,
+          silent: silent || false
+        };
+        if (replaceMerge !== undefined && replaceMerge !== null) {
+          opts.replaceMerge = replaceMerge;
+        }
+        this.echartObj.setOption(option, opts);
+      }，
     
     // 获取配置
     getOption() {
